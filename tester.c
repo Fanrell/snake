@@ -11,8 +11,30 @@ typedef struct snake
   int posy;
   struct snake *next;
 }Snake;
+Snake *wunsz = NULL;
 
+Snake *nowy (int x, int y)
+{
+  Snake *nowy;
+  if((nowy = (Snake*)malloc(sizeof(Snake))) == NULL)
+  {
+    exit(-1);
+  }
+  nowy->posx = x;
+  nowy->posy = y;
+  nowy->next = NULL;
+  return nowy;
+}
 
+void growth()
+{
+  Snake *iter = wunsz;
+  while (iter->next != NULL)
+  {
+    iter = iter->next;
+  }
+  iter->next = nowy(iter->posx-1,iter->posy-1);
+}
 
 int food_x = -1024;
 int food_y = -1024;
@@ -60,6 +82,7 @@ void collision(const int x,const int y)
       score+=10;
       food_x = -1024;
       food_y = -1024;
+      growth();
   }
   else if(x < 1 || x > ROZMIAR || y < 1 || y > (ROZMIAR*2))
   {
@@ -67,18 +90,43 @@ void collision(const int x,const int y)
   }
 }
 
+void mover(Snake *wunsz)
+{
+  mvaddstr(wunsz->posx, wunsz->posy, "0");
+  if(wunsz->next != NULL)
+  {
+    mover(wunsz->next);
+  }
+}
+
 void snake_move(Snake *wunsz,int x, int y)
 {
   int o_x, o_y;
-  Snake *iter = wunsz->next;
-  mvaddstr(wunsz->posx, wunsz->posy, "0");
+  Snake *iter = wunsz;
+
+  mover(wunsz);
+
   collision(wunsz->posx,wunsz->posy);
-  o_x = wunsz->posx;
-  o_y = wunsz->posy;
-  // while (iter != NULL)
-  // {
-  //   iter->posx 
-  // }
+  int i = 0;
+  while (iter->next != NULL)
+  {
+    if(i == 0)
+    {
+      iter->next->posx = iter->posx;
+      iter->next->posy = iter->posy;
+    }
+    else
+    {
+      iter->next->posx = o_x;
+      iter->next->posy = o_y;
+    }
+    o_x = iter->next->posx;
+    o_y = iter->next->posy;
+    iter = iter->next;
+    i++;
+    
+  }
+  
   
   wunsz->posx += x;
 	wunsz->posy += y;
@@ -104,9 +152,11 @@ int main(void)
   int x,y;
   x = 0;
   y = 1;
-  Snake wunsz;
-  wunsz.posx = 10;
-  wunsz.posy = 10;
+  wunsz = nowy(10,10);
+  bool w,s,a,d;
+  w = true;
+  s = true;
+  a = false;
   do {
     int c = getch();
     switch (c) 
@@ -115,22 +165,46 @@ int main(void)
         quit = true;
         break;
 	case 'w':
+  if(w)
+  {
 		x = -1;
 		y = 0;
+    a = true;
+    d = true;
+    s = false;
+  }
 		break;
 
 	case 'a':
+  if(a)
+  {
 		x = 0;
 		y = -1;
+    s = true;
+    w = true;
+    d = false;
+  }
 		break;
 
 	case 'd':
+  if(d)
+  {
 		x = 0;
 		y = 1;
+    s = true;
+    w = true;
+    a = false;
+  }
 		break;
 	case 's':
+  if(s)
+  {
 		x = 1;
 		y = 0;
+    a = true;
+    d = true;
+    w = false;
+  }
 		break;
 
       default:
@@ -140,7 +214,7 @@ int main(void)
   clear();
   map();
   food();
-  snake_move(&wunsz,x,y);
+  snake_move(wunsz,x,y);
   mvaddstr(31,0,"score:");
   mvaddstr(32,0,"Press q to exit"); 
 	refresh();
