@@ -12,7 +12,6 @@ typedef struct snake
   struct snake *next;
 }Snake;
 Snake *wunsz = NULL;
-
 Snake *nowy (int x, int y)
 {
   Snake *nowy;
@@ -33,7 +32,7 @@ void growth()
   {
     iter = iter->next;
   }
-  iter->next = nowy(iter->posx-1,iter->posy-1);
+  iter->next = nowy(50,50);
 }
 
 int food_x = -1024;
@@ -88,6 +87,18 @@ void collision(const int x,const int y)
   {
     quit = true;
   }
+  Snake *iter = wunsz->next;
+
+  while (iter != NULL)
+  {
+    if(wunsz->posx == iter->posx && wunsz->posy == iter->posy)
+    {
+      quit = true;
+      break;
+    }
+    iter = iter->next;
+  }
+  
 }
 
 void mover(Snake *wunsz)
@@ -108,20 +119,23 @@ void snake_move(Snake *wunsz,int x, int y)
 
   collision(wunsz->posx,wunsz->posy);
   int i = 0;
-  while (iter->next != NULL)
+  while (iter != NULL)
   {
+    int tx, ty;
     if(i == 0)
     {
-      iter->next->posx = iter->posx;
-      iter->next->posy = iter->posy;
+      o_x = iter->posx;
+      o_y = iter->posy;
     }
-    else
+    if(i>=1)
     {
-      iter->next->posx = o_x;
-      iter->next->posy = o_y;
+      tx = iter->posx;
+      ty = iter->posy;
+      iter->posx = o_x;
+      iter->posy = o_y;
+      o_x = tx;
+      o_y = ty;
     }
-    o_x = iter->next->posx;
-    o_y = iter->next->posy;
     iter = iter->next;
     i++;
     
@@ -157,6 +171,7 @@ int main(void)
   w = true;
   s = true;
   a = false;
+  keypad(stdscr, TRUE);
   do {
     int c = getch();
     switch (c) 
@@ -164,7 +179,7 @@ int main(void)
     case 'q':
         quit = true;
         break;
-	case 'w':
+	case KEY_UP:
   if(w)
   {
 		x = -1;
@@ -175,7 +190,7 @@ int main(void)
   }
 		break;
 
-	case 'a':
+	case KEY_LEFT:
   if(a)
   {
 		x = 0;
@@ -186,7 +201,7 @@ int main(void)
   }
 		break;
 
-	case 'd':
+	case KEY_RIGHT:
   if(d)
   {
 		x = 0;
@@ -196,7 +211,7 @@ int main(void)
     a = false;
   }
 		break;
-	case 's':
+	case KEY_DOWN:
   if(s)
   {
 		x = 1;
@@ -215,8 +230,9 @@ int main(void)
   map();
   food();
   snake_move(wunsz,x,y);
-  mvaddstr(31,0,"score:");
-  mvaddstr(32,0,"Press q to exit"); 
+  mvprintw(31,0,"score: %d", score);
+  mvprintw(32,0,"controles: arrows keys");
+  mvprintw(33,0,"Press q to exit"); 
 	refresh();
   
   } while( ! quit );
