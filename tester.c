@@ -3,7 +3,7 @@
 #include <ncurses.h>
 #include <string.h>
 #include <time.h>
-#define ROZMIAR 30
+#define SIZE 30
 
 typedef struct snake
 {
@@ -12,17 +12,17 @@ typedef struct snake
   struct snake *next;
 }Snake;
 Snake *wunsz = NULL;
-Snake *nowy (int x, int y)
+Snake *new (int x, int y)
 {
-  Snake *nowy;
-  if((nowy = (Snake*)malloc(sizeof(Snake))) == NULL)
+  Snake *new;
+  if((new = (Snake*)malloc(sizeof(Snake))) == NULL)
   {
     exit(-1);
   }
-  nowy->posx = x;
-  nowy->posy = y;
-  nowy->next = NULL;
-  return nowy;
+  new->posx = x;
+  new->posy = y;
+  new->next = NULL;
+  return new;
 }
 
 void growth()
@@ -32,7 +32,7 @@ void growth()
   {
     iter = iter->next;
   }
-  iter->next = nowy(50,50);
+  iter->next = new(50,50);
 }
 
 int food_x = -1024;
@@ -43,15 +43,15 @@ WINDOW * mainwin;
 
 void map()
 {
-  for(int i=0;i<=ROZMIAR;i++)
+  for(int i=0;i<=SIZE;i++)
   {
     mvaddstr(i,0,"|");
-    mvaddstr(i,ROZMIAR*2,"|");
+    mvaddstr(i,SIZE*2,"|");
   }
-  for(int i=0;i<=ROZMIAR*2;i++)
+  for(int i=0;i<=SIZE*2;i++)
   {
     mvaddstr(0,i,"-");
-    mvaddstr(ROZMIAR,i,"-");
+    mvaddstr(SIZE,i,"-");
   }
 }
 
@@ -63,13 +63,13 @@ void food()
   if(food_x == -1024 && food_y == -1024)
   {
     srand(seed);
-    food_x = rand()%ROZMIAR;
+    food_x = rand()%SIZE;
     if(food_x == 0) food_x+=1;
     if(food_x == 0) food_x+=1;
     srand(seed);
-    food_y = rand()%(ROZMIAR*2);
+    food_y = rand()%(SIZE*2);
     if(food_y == 0) food_y+=1;
-    if(food_y == (ROZMIAR*2)) food_y-=1;
+    if(food_y == (SIZE*2)) food_y-=1;
   }
   mvaddstr(food_x,food_y,"*");
 }
@@ -83,7 +83,7 @@ void collision(const int x,const int y)
       food_y = -1024;
       growth();
   }
-  else if(x < 1 || x > ROZMIAR || y < 1 || y > (ROZMIAR*2))
+  else if(x < 1 || x > SIZE || y < 1 || y > (SIZE*2))
   {
     quit = true;
   }
@@ -166,7 +166,7 @@ int main(void)
   int x,y;
   x = 0;
   y = 1;
-  wunsz = nowy(10,10);
+  wunsz = new(10,10);
   bool w,s,a,d;
   w = true;
   s = true;
