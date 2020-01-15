@@ -65,11 +65,13 @@ void food()
     srand(seed);
     food_x = rand()%SIZE;
     if(food_x == 0) food_x+=1;
-    if(food_x == 0) food_x+=1;
+    if(food_x == SIZE) food_x-=1;
+    if(food_x == wunsz->posx) food_x = rand()%SIZE;
     srand(seed);
     food_y = rand()%(SIZE*2);
     if(food_y == 0) food_y+=1;
     if(food_y == (SIZE*2)) food_y-=1;
+    if(food_y == wunsz->posy) food_y = rand()%SIZE;
   }
   mvaddstr(food_x,food_y,"*");
 }
@@ -83,7 +85,7 @@ void collision(const int x,const int y)
       food_y = -1024;
       growth();
   }
-  else if(x < 1 || x > SIZE || y < 1 || y > (SIZE*2))
+  else if(x < 1 || x >(SIZE-1) || y < 1 || y > (SIZE*2-1))
   {
     quit = true;
   }
