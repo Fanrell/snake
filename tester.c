@@ -170,12 +170,13 @@ int main(void)
 
   int x,y;
   x = 0;
-  y = 1;
+  y = 0;
   wunsz = new(10,10);
   bool w,s,a,d;
   w = true;
   s = true;
-  a = false;
+  a = true;
+  d = true;
   keypad(stdscr, TRUE);
   do {
     int c = getch();
