@@ -101,12 +101,13 @@ void collision(const int x,const int y)
   
 }
 
-void mover(Snake *wunsz)
+void mover(Snake *wunsz, int head)
 {
-  mvaddstr(wunsz->posx, wunsz->posy, "0");
+  if(head == 0) mvaddstr(wunsz->posx, wunsz->posy, "O");
+  else mvaddstr(wunsz->posx, wunsz->posy, "o");
   if(wunsz->next != NULL)
   {
-    mover(wunsz->next);
+    mover(wunsz->next,++head);
   }
 }
 
@@ -115,7 +116,9 @@ void snake_move(Snake *wunsz,int x, int y)
   int o_x, o_y;
   Snake *iter = wunsz;
 
-  mover(wunsz);
+  int head = 0;
+
+  mover(wunsz, head);
 
   collision(wunsz->posx,wunsz->posy);
   int i = 0;
